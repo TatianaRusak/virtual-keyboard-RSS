@@ -60,13 +60,14 @@ insertKeysIntoKeyboard();
 //   }
 // };
 
-// -------------- СОБЫТИЯ КЛАВИАТУРЫ --------------
+// -------------- СОБЫТИЯ КЛАВИАТУРЫ  keydown --------------
 
 document.addEventListener('keydown', (event) => {
   // -------- CAPS LOCK -----------
   const keys = document.querySelectorAll('.key');
 
   if (event.code === 'CapsLock') {
+    isCaps = true;
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
@@ -88,20 +89,20 @@ document.addEventListener('keydown', (event) => {
   // -------- SHIFT -----------
 
   if (event.code === 'ShiftRight' || event.code === 'ShiftLeft') {
-    if (event.repeat) { return; }
+    if (event.repeat) { return; }            // отменяем автоповтор
     const shift = event.code;
+    setCase();
 
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][letterCase].join().toLowerCase();
+           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toLowerCase();
         }
-    });
+      });
     } else { 
       keys.forEach((key) => {
-        console.log(key.dataset.code);
         if (key.textContent.length === 1) {
-          key.textContent = key.textContent.toUpperCase();
+           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toUpperCase();
         }
       });
     }
@@ -109,18 +110,40 @@ document.addEventListener('keydown', (event) => {
     document.querySelector(`[data-code='${shift}']`).classList.add('active');
   }
 
+  //---------------------
   document.querySelector(`[data-code='${event.code}']`).classList.add('active');
   textarea.focus();
 });
 
+// -------------- СОБЫТИЯ КЛАВИАТУРЫ  keyup --------------
+
 document.addEventListener('keyup', (event) => {
+  const keys = document.querySelectorAll('.key');
+
   if (event.code === 'CapsLock') {
     return;
   }
 
+  // -------- SHIFT -----------
+
   if (event.code === 'ShiftRight' || event.code === 'ShiftLeft') {
-    setCase();
-    changeKeyText();
+    const shift = event.code;
+    if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
+      keys.forEach((key) => {
+        if (key.textContent.length === 1) {
+           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
+        }
+      });
+    } else { 
+      keys.forEach((key) => {
+        if (key.textContent.length === 1) {
+           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toLowerCase();
+        }
+      });
+    };
+
+    document.querySelector(`[data-code='${shift}']`).classList.remove('active');
+    return;
   }
 
   document.querySelector(`[data-code='${event.code}']`).classList.remove('active');
@@ -128,16 +151,15 @@ document.addEventListener('keyup', (event) => {
 
 textarea.innerHTML = '';
 
-// -------------- СОБЫТИЯ МЫШИ --------------
+// -------------- СОБЫТИЯ МЫШИ  mousedown --------------
 
 keyboard.addEventListener('mousedown', (event) => {
   const data = event.target.dataset.code;
+  const keys = document.querySelectorAll('.key');
 
   // -------- CAPS LOCK -----------
 
   if (data === 'CapsLock') {
-    const keys = document.querySelectorAll('.key');
-
     if (event.target.classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
@@ -160,31 +182,57 @@ keyboard.addEventListener('mousedown', (event) => {
 
   if (data === 'ShiftRight' || data === 'ShiftLeft') {
     // document.querySelector(`[data-code='${data}']`).classList.toggle('active');
-    event.target.classList.add('active');
-    setCase();
-    changeKeyText();
+    // const shift = event.code;
+    if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
+      keys.forEach((key) => {
+        if (key.textContent.length === 1) {
+           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toLowerCase();
+        }
+      });
+    } else { 
+      keys.forEach((key) => {
+        if (key.textContent.length === 1) {
+           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toUpperCase();
+        }
+      });
+    };
+    event.target.classList.toggle('active');
     return;
   }
 
+
+// -------------------
   console.log(event.target);
   event.target.classList.add('active');
 
   textarea.focus();
-  console.log(textarea.textHTML);
-  textarea.value += keyboardCurrentLang[data][letterCase];
+  console.log(event.target);
+  textarea.value += document.querySelector(`[data-code=${data}]`).innerText;
 });
 
+// -------------- СОБЫТИЯ МЫШИ  mouseup --------------
+
 document.addEventListener('mouseup', (event) => {
+  const keys = document.querySelectorAll('.key');
   const data = event.target.dataset.code;
   if (data === 'CapsLock') {
     return;
   }
 
   if (data === 'ShiftRight' || data === 'ShiftLeft') {
-    event.target.classList.remove('active');
-    setCase();
-    changeKeyText();
-    return;
+    if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
+      keys.forEach((key) => {
+        if (key.textContent.length === 1) {
+           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
+        }
+      });
+    } else { 
+      keys.forEach((key) => {
+        if (key.textContent.length === 1) {
+           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toLowerCase();
+        }
+      });
+    };
   }
 
   setTimeout(() => {
