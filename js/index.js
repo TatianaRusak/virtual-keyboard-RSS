@@ -112,7 +112,9 @@ document.addEventListener('keydown', (event) => {
 
   //---------------------
   document.querySelector(`[data-code='${event.code}']`).classList.add('active');
+  event.preventDefault()
   textarea.focus();
+  textarea.value += document.querySelector(`[data-code='${event.code}']`).innerText;
 });
 
 // -------------- СОБЫТИЯ КЛАВИАТУРЫ  keyup --------------
