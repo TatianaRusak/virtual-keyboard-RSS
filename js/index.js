@@ -86,33 +86,74 @@ document.addEventListener('keydown', (event) => {
     return;
   }
 
+  document.querySelector(`[data-code='${event.code}']`).classList.add('active'); // подсвечивание клавиши при нажатии
+
   // -------- SHIFT -----------
 
   if (event.code === 'ShiftRight' || event.code === 'ShiftLeft') {
-    if (event.repeat) { return; }            // отменяем автоповтор
-    const shift = event.code;
-    setCase();
+    if (event.repeat) { return; } // отменяем автоповтор
+    // const shift = event.code;
+    // setCase();
+    event.preventDefault();
 
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toLowerCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toLowerCase();
         }
       });
-    } else { 
+    } else {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toUpperCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toUpperCase();
         }
       });
     }
+    return;
+  }
 
-    document.querySelector(`[data-code='${shift}']`).classList.add('active');
+  // -------- CTRL, ATL, WIN -----------
+
+  if (event.code === 'ControlLeft' || event.ctrlKey || event.altKey || event.code === 'OSLeft' || event.code === 'ContextMenu') {
+    event.preventDefault();
+    return;
+  }
+
+  // -------- SPACE -----------
+
+  if (event.code === 'Space') {
+    textarea.value += ' ';
+  }
+
+  // -------- ENTER -----------
+
+  if (event.code === 'Enter') {
+    return;
+  }
+
+  // -------- Backspace -----------
+
+  if (event.code === 'Backspace') {
+    const str = textarea.value;
+    const cursorPos = textarea.selectionEnd;
+
+    const a = str.slice(0, cursorPos);
+    const b = str.slice(cursorPos);
+
+    textarea.value = a + b;
+    return;
+  }
+
+  // -------- TAB -----------
+
+  if (event.code === 'Tab') {
+    event.preventDefault();
+    textarea.setRangeText('\t', textarea.selectionStart, textarea.selectionEnd, 'end');
+    return;
   }
 
   //---------------------
-  document.querySelector(`[data-code='${event.code}']`).classList.add('active');
-  event.preventDefault()
+  event.preventDefault();
   textarea.focus();
   textarea.value += document.querySelector(`[data-code='${event.code}']`).innerText;
 });
@@ -133,16 +174,16 @@ document.addEventListener('keyup', (event) => {
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
         }
       });
-    } else { 
+    } else {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toLowerCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toLowerCase();
         }
       });
-    };
+    }
 
     document.querySelector(`[data-code='${shift}']`).classList.remove('active');
     return;
@@ -150,8 +191,6 @@ document.addEventListener('keyup', (event) => {
 
   document.querySelector(`[data-code='${event.code}']`).classList.remove('active');
 });
-
-textarea.innerHTML = '';
 
 // -------------- СОБЫТИЯ МЫШИ  mousedown --------------
 
@@ -188,27 +227,63 @@ keyboard.addEventListener('mousedown', (event) => {
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toLowerCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toLowerCase();
         }
       });
-    } else { 
+    } else {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toUpperCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][1].join().toUpperCase();
         }
       });
-    };
+    }
     event.target.classList.toggle('active');
     return;
   }
 
-
-// -------------------
-  console.log(event.target);
+  //---------------------------
   event.target.classList.add('active');
 
-  textarea.focus();
-  console.log(event.target);
+  // -------- CTRL, ATL, WIN -----------
+
+  if (data === 'ControlLeft' || data === 'ControlRight' || data === 'AltRight' || data === 'AltLeft' || data === 'OSLeft' || data === 'ContextMenu') {
+    return;
+  }
+
+  // -------- SPACE -----------
+
+  if (data === 'Space') {
+    textarea.value += ' ';
+  }
+
+  // -------- ENTER -----------
+
+  if (data === 'Enter') {
+    textarea.setRangeText('\n', textarea.selectionStart, textarea.selectionEnd, 'end');
+    return;
+  }
+
+  // -------- Backspace -----------
+
+  if (data === 'Backspace') {
+    if (textarea.selectionStart == textarea.selectionEnd) { 
+      textarea.setRangeText('', textarea.selectionStart - 1, textarea.selectionEnd, 'end');
+      return;
+    } else { 
+      textarea.setRangeText('', textarea.selectionStart, textarea.selectionEnd, 'end');
+      return;
+    }
+  }
+
+  // -------- TAB -----------
+
+  if (data === 'Tab') {
+    textarea.setRangeText('\t', textarea.selectionStart, textarea.selectionEnd, 'end');
+    return;
+  }
+
+  // -------------------
+
   textarea.value += document.querySelector(`[data-code=${data}]`).innerText;
 });
 
@@ -225,17 +300,20 @@ document.addEventListener('mouseup', (event) => {
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
         }
       });
-    } else { 
+    } else {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
-           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toLowerCase();
+          key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toLowerCase();
         }
       });
-    };
+    }
   }
+  // const cursorPos = textarea.selectionEnd;
+  textarea.focus();
+  // textarea.selectionEnd = cursorPos;
 
   setTimeout(() => {
     event.target.classList.remove('active');
