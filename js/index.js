@@ -4,15 +4,19 @@ import { keyboardEN, keyboardRU } from './keyboard_codes.js';
 const body = document.querySelector('body');
 const textarea = document.createElement('textarea');
 const keyboard = document.createElement('div');
-
 keyboard.classList.add('keyboard');
+
+const text = document.createElement('div');
+text.classList.add('text');
+text.innerHTML = 'The keyboard was created in <span>Windows</span>.<br> Press left <span>Ctrl+Alt</span> to change language.';
+
 body.appendChild(textarea);
 body.appendChild(keyboard);
+body.appendChild(text);
 
 let lang = localStorage.getItem('lang') || 'en';
 let keyboardCurrentLang;
-let letterCase = 0;
-let isCaps = false;
+const letterCase = 0;
 
 localStorage.setItem('lang', lang);
 
@@ -51,15 +55,6 @@ function insertKeysIntoKeyboard() {
 
 insertKeysIntoKeyboard();
 
-// function capsLockBehaviour(event) {
-//   if (event.target.dataset.code === 'CapsLock') {
-//     event.target.classList.toggle('active');
-//     setCase();
-//     changeKeyText();
-//     return;
-//   }
-// };
-
 // -------------- СОБЫТИЯ КЛАВИАТУРЫ  keydown --------------
 
 document.addEventListener('keydown', (event) => {
@@ -67,7 +62,6 @@ document.addEventListener('keydown', (event) => {
   const keys = document.querySelectorAll('.key');
 
   if (event.code === 'CapsLock') {
-    isCaps = true;
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
       keys.forEach((key) => {
         if (key.textContent.length === 1) {
@@ -76,7 +70,6 @@ document.addEventListener('keydown', (event) => {
       });
     } else {
       keys.forEach((key) => {
-        console.log(key.dataset.code);
         if (key.textContent.length === 1) {
           key.textContent = key.textContent.toUpperCase();
         }
@@ -198,6 +191,10 @@ keyboard.addEventListener('mousedown', (event) => {
   const data = event.target.dataset.code;
   const keys = document.querySelectorAll('.key');
 
+  if (event.target.dataset.code === undefined) {
+    return;
+  }
+
   // -------- CAPS LOCK -----------
 
   if (data === 'CapsLock') {
@@ -209,7 +206,6 @@ keyboard.addEventListener('mousedown', (event) => {
       });
     } else {
       keys.forEach((key) => {
-        console.log(key.dataset.code);
         if (key.textContent.length === 1) {
           key.textContent = key.textContent.toUpperCase();
         }
@@ -266,13 +262,12 @@ keyboard.addEventListener('mousedown', (event) => {
   // -------- Backspace -----------
 
   if (data === 'Backspace') {
-    if (textarea.selectionStart == textarea.selectionEnd) { 
+    if (textarea.selectionStart === textarea.selectionEnd) {
       textarea.setRangeText('', textarea.selectionStart - 1, textarea.selectionEnd, 'end');
       return;
-    } else { 
-      textarea.setRangeText('', textarea.selectionStart, textarea.selectionEnd, 'end');
-      return;
     }
+    textarea.setRangeText('', textarea.selectionStart, textarea.selectionEnd, 'end');
+    return;
   }
 
   // -------- TAB -----------
@@ -298,7 +293,7 @@ document.addEventListener('mouseup', (event) => {
 
   if (data === 'ShiftRight' || data === 'ShiftLeft') {
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
-      keys.forEach((key) => {
+      keys.map((key) => {
         if (key.textContent.length === 1) {
           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
         }
@@ -311,13 +306,11 @@ document.addEventListener('mouseup', (event) => {
       });
     }
   }
-  // const cursorPos = textarea.selectionEnd;
   textarea.focus();
-  // textarea.selectionEnd = cursorPos;
 
-  setTimeout(() => {
-    event.target.classList.remove('active');
-  }, 300);
+  // setTimeout(() => {
+  event.target.classList.remove('active');
+  // }, 300);
 });
 
 // сохранить язык в local storage и переключить раскладку
@@ -366,15 +359,3 @@ runOnKeys(
   'ControlLeft',
   'AltLeft',
 );
-
-// клавиша CapsLock
-
-function setCase() {
-  if (!isCaps) {
-    isCaps = true;
-    letterCase = 1;
-  } else {
-    isCaps = false;
-    letterCase = 0;
-  }
-}
