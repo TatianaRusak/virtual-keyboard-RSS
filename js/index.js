@@ -3,6 +3,9 @@ import { keyboardEN, keyboardRU } from './keyboard_codes.js';
 
 const body = document.querySelector('body');
 
+const title = document.createElement('div');
+title.classList.add('title');
+title.innerHTML = 'Virtual  KEYBOARD';
 
 const textarea = document.createElement('textarea');
 const keyboard = document.createElement('div');
@@ -12,6 +15,7 @@ const text = document.createElement('div');
 text.classList.add('text');
 text.innerHTML = 'The keyboard was created in <span>Windows</span>.<br> Press left <span>Ctrl+Alt</span> to change language.';
 
+body.appendChild(title);
 body.appendChild(textarea);
 body.appendChild(keyboard);
 body.appendChild(text);
