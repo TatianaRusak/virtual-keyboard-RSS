@@ -1,7 +1,9 @@
+/* eslint-disable import/extensions */
 import { keyboardEN, keyboardRU } from './keyboard_codes.js';
-// import { capsLockBehaviour } from './specKeysFunc.js';
 
 const body = document.querySelector('body');
+
+
 const textarea = document.createElement('textarea');
 const keyboard = document.createElement('div');
 keyboard.classList.add('keyboard');
@@ -39,7 +41,9 @@ function insertKeysIntoKeyboard() {
     const keyDiv = document.createElement('div');
     keyDiv.classList.add('key');
 
-    if (keyCode === 'Backspace' || keyCode === 'CapsLock' || keyCode === 'Tab' || keyCode === 'Enter' || keyCode === 'Control' || keyCode === 'ShiftLeft' || keyCode === 'ShiftRight') {
+    const bigKeyCodeArr = ['Backspace', 'CapsLock', 'Tab', 'Enter', 'Control', 'ShiftLeft', 'ShiftRight'];
+
+    if (bigKeyCodeArr.includes(keyCode)) {
       keyDiv.classList.add('key_big');
     }
 
@@ -106,8 +110,9 @@ document.addEventListener('keydown', (event) => {
   }
 
   // -------- CTRL, ATL, WIN -----------
+  const specKeyCodeArr = ['ControlLeft', 'ControlRight', 'AltRight', 'AltLeft', 'OSLeft', 'ContextMenu'];
 
-  if (event.code === 'ControlLeft' || event.ctrlKey || event.altKey || event.code === 'OSLeft' || event.code === 'ContextMenu') {
+  if (specKeyCodeArr.includes(event.code)) {
     event.preventDefault();
     return;
   }
@@ -242,7 +247,9 @@ keyboard.addEventListener('mousedown', (event) => {
 
   // -------- CTRL, ATL, WIN -----------
 
-  if (data === 'ControlLeft' || data === 'ControlRight' || data === 'AltRight' || data === 'AltLeft' || data === 'OSLeft' || data === 'ContextMenu') {
+  const specKeyCodeArr = ['ControlLeft', 'ControlRight', 'AltRight', 'AltLeft', 'OSLeft', 'ContextMenu'];
+
+  if (specKeyCodeArr.includes(data)) {
     return;
   }
 
@@ -293,7 +300,7 @@ document.addEventListener('mouseup', (event) => {
 
   if (data === 'ShiftRight' || data === 'ShiftLeft') {
     if (document.querySelector('[data-code=\'CapsLock\']').classList.contains('active')) {
-      keys.map((key) => {
+      keys.forEach((key) => {
         if (key.textContent.length === 1) {
           key.innerText = keyboardCurrentLang[key.dataset.code][0].join().toUpperCase();
         }
@@ -308,9 +315,7 @@ document.addEventListener('mouseup', (event) => {
   }
   textarea.focus();
 
-  // setTimeout(() => {
   event.target.classList.remove('active');
-  // }, 300);
 });
 
 // сохранить язык в local storage и переключить раскладку
